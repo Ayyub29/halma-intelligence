@@ -19,6 +19,7 @@ def redrawGameWindow():
     if not start:
         board.draw(win)
         board.drawtime(win)
+
     pygame.display.update()
 
 def cekTetangga(x,y,a,b):
@@ -151,19 +152,22 @@ def minimax(board, player, depth):
 
     allMove = []
     allPapan = []
+    t = 10
     for bidak in pion:
         for move in (possibleMove(board, bidak)):
-            print(move.x,move.y)
-            papanTemp = copy.deepcopy(board)
-            pionTemp = copy.deepcopy(move)
-            papanTemp.isi[pionTemp.x][pionTemp.y].status = bidak.status
-            papanTemp.isi[pionTemp.x][pionTemp.y].owner = bidak.owner
-            papanTemp.isi[bidak.x][bidak.y].status = 0
-            papanTemp.isi[bidak.x][bidak.y].owner = 2
-            allPapan.append(papanTemp)
+            if (t > 0):
+                print(move.x,move.y)
+                papanTemp = copy.deepcopy(board)
+                pionTemp = copy.deepcopy(move)
+                papanTemp.isi[pionTemp.x][pionTemp.y].status = bidak.status
+                papanTemp.isi[pionTemp.x][pionTemp.y].owner = bidak.owner
+                papanTemp.isi[bidak.x][bidak.y].status = 0
+                papanTemp.isi[bidak.x][bidak.y].owner = 2
+                allPapan.append(papanTemp)
+                t -= 1
 
     bestValue = -(math.inf)
-    bestPapan = papan(board.x,board.y,board.turn)
+    bestPapan = papan(board.x,board.y,board.turn,board.mode)
     for boards in allPapan:
         val = minValue(boards, player, depth-1, -(math.inf), math.inf)
         if (val > bestValue):
@@ -179,7 +183,6 @@ def fungsiObjektif(board):
     enemySum = 0
     for i in range(n):
         for j in range(n):
-
             #cek pake status dari si cellboard (apakah dia ada bidak atau ga)
             if board.isi[i][j].status == 1  or board.isi[i][j].status == 3:
                 #if 2*self.isi[i][j].status - 1 == state.color:
@@ -187,7 +190,6 @@ def fungsiObjektif(board):
                     #Jumlahin score player 1
                     mySum = mySum + i + j
                 else:
-
                     #Jumlahin score player 2
                     enemySum = enemySum + (n-i-1) + (n-j-1)
 
@@ -201,8 +203,9 @@ run = True #gamenya masih jalan?
 start = True #dia lagi lagi di page mana? kalo true berarti di page awal, kalo false berarti di page permainan
 hasSetRow = False
 hasSetColor = False
+hasSetMode = False
 
-bg1 = [pygame.image.load('bgstart.png'), pygame.image.load('bggame.png')]
+bg1 = [pygame.image.load('bgstart1.png'), pygame.image.load('bggame.png')]
 bg = pygame.transform.scale(bg1[0], (1280, 720))
 win.blit(bg, (0,0))
 #buat ngeload background
@@ -233,36 +236,45 @@ while run:
                     halma.setrow(3) #set rownya = 3 -> ukuran papan 10x10
                     ukuranPapan = 16
                     hasSetRow = True
+                if pygame.Rect(halma.mod1hitbox).collidepoint(event.pos): #kalo misal rad1hitbox lagi diklik
+                    halma.setmode(1)  #set rownya = 1 -> ukuran papan 8x8
+                    hasSetMode = True
+                if pygame.Rect(halma.mod2hitbox).collidepoint(event.pos):
+                    halma.setmode(2) #set rownya = 2 -> ukuran papan 10x10
+                    hasSetMode = True
+                if pygame.Rect(halma.mod3hitbox).collidepoint(event.pos):
+                    halma.setmode(3) #set rownya = 3 -> ukuran papan 10x10
+                    hasSetMode = True
                 if pygame.Rect(halma.col1hitbox).collidepoint(event.pos): #kalo misal rad1hitbox lagi diklik
                     halma.setcolor(1)  #set rownya = 1 -> ukuran papan 8x8
                     hasSetColor = True
                 if pygame.Rect(halma.col2hitbox).collidepoint(event.pos):
                     halma.setcolor(2) #set rownya = 2 -> ukuran papan 10x10
                     hasSetColor = True
-            if hasSetColor and hasSetRow: #kalo udah ngesetting
+            if hasSetColor and hasSetRow and hasSetMode: #kalo udah ngesetting
                 if event.type == pygame.KEYDOWN: #kalau dia mencet sesuatu
                     if event.key == pygame.K_SPACE: #kalau dia mencet space
                         start = False #biar bisa pindah page
                         bg = pygame.transform.scale(bg1[1], (1280, 720))
                         win.blit(bg, (0,0))
                         # ngeserve background page selanjutnya
-                        board = papan(ukuranPapan,ukuranPapan,halma.color)
+                        board = papan(ukuranPapan,ukuranPapan,halma.color,halma.mode)
     else:
-        if board.turn == 1:
-            if board.time == 0:
-                #ngeback semua yang udah terjadi
-                for kotak in curPiece:
-                    kotak.clicked = 0
-                    if kotak == firstPiece:
-                        kotak.setStatus(kotak.status-1)
-                    else:
-                        kotak.setStatus(kotak.status-((firstPiece.owner+1)*2))
-                curPiece.clear()
-                lastX, lastY = -1, -1
-                countLoop = 1
-                sedangLoncat = False
-                board.changeturn()
+        if board.turn == 1 and (board.mode == 1 or board.mode == 2): #and (board.mode == 1 or board.mode == 2) and board.player1 == 1:
             for event in pygame.event.get():
+                if board.time == 0:
+                #ngeback semua yang udah terjadi
+                    for kotak in curPiece:
+                        kotak.clicked = 0
+                        if kotak == firstPiece:
+                            kotak.setStatus(kotak.status-1)
+                        else:
+                            kotak.setStatus(kotak.status-((firstPiece.owner+1)*2))
+                    curPiece.clear()
+                    lastX, lastY = -1, -1
+                    countLoop = 1
+                    sedangLoncat = False
+                    board.changeturn()
                 if event.type == pygame.USEREVENT:
                     board.settime(board.time-1)
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -335,7 +347,7 @@ while run:
                                                 board.isi[i][j].clicked = 1
                                                 board.isi[i][j].owner = firstPiece.owner
                                                 lastPiece = board.isi[i][j]
-        if board.turn == 2:
+        if board.turn == 2:# and (board.mode == 3 or board.mode == 2): #and (board.mode == 3 or board.mode == 2) and board.player == 2:#(board.mode == 1 or board.mode == 3) and ((board.player1 == 2 and board.turn == 1) or (board.player2 == 2 and board.turn == 2)):
             board = minimax(board,board.turn,1)
             board.changeturn()
 

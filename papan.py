@@ -51,12 +51,13 @@ class papan(object):
     play1 =  [pygame.image.load('player-one-turn.png'), pygame.image.load('player-one.png')]
     play2 =  [pygame.image.load('player-two.png'), pygame.image.load('player-two-turn.png')]
 
-    def __init__(self,x,y,color):
+    def __init__(self,x,y,color,mode):
         self.isi = [[]*x for i in range(y)] # matriks cellboardnya
         self.x = x #ukuran papan x
         self.y = y #ukuran papan y
         self.okayhitbox = (1020, 280, 241, 60)
         self.quithitbox = (1020, 380, 241, 60)
+        self.mode = mode
         self.turn = color # 0 player 1, 1 player 2
         self.time = 100
         #self.isStart = 1
@@ -124,6 +125,25 @@ class papan(object):
         text = font.render('Time: ' + str(timer), 1, (250, 183, 50))
         win.blit(text, (1050, 65))
         pygame.display.update()
+    
+    def drawWin(self,win):
+        font = pygame.font.SysFont('Consolas', 30)
+        text = font.render('You Win!', 1, (250, 183, 50))
+        win.blit(text, (1050, 90))
+        pygame.display.update()
+
+    def checkwin(self):
+        is1Win = True
+        for i in range(self.x):
+            for j in range(self.y):
+                if (self.isi[i][j].status == 1 and self.isi[i][j].camp != 2):
+                    is1Win = False
+        is2Win = True
+        for i in range(self.x):
+            for j in range(self.y):
+                if (self.isi[i][j].status == 3 and self.isi[i][j].camp != 1):
+                    is2Win = False
+        return is1Win or is2Win
 
     def draw(self, win): # ngedraw papan (okay button, player turn, quit button sama cellboard)
         #x = 262
@@ -151,6 +171,9 @@ class papan(object):
         #ngeprint quit button
         win.blit(self.quitbut, (1020, 380))
         #pygame.draw.rect(win, (255,0,0), self.quithitbox,2)
+        if self.checkwin():
+            self.drawWin(win)
+            time.delay(1)
 
     #Objective Function
 
@@ -164,18 +187,24 @@ class startstate(object):
     rad1but = [pygame.image.load('radio-8.png'), pygame.image.load('radio-8-clicked.png')]
     rad2but = [pygame.image.load('radio-10.png'), pygame.image.load('radio-10-clicked.png')]
     rad3but = [pygame.image.load('radio-16.png'), pygame.image.load('radio-16-clicked.png')]
+    
+    mod1but = [pygame.image.load('human-bot1.png'), pygame.image.load('human-bot1-clicked.png')]
+    mod2but = [pygame.image.load('human-bot2.png'), pygame.image.load('human-bot2-clicked.png')]
+    mod3but = [pygame.image.load('bot1-bot2.png'), pygame.image.load('bot1-bot2-clicked.png')]
 
     def __init__(self):
         #state dalam permainannya
         self.row = 0      #0 Null, 8 8x8 row, 10 10x10 row, 16 16x16 row
-        self.player1 = 0  #0 human, 1 AI-Minimax, 2 AI-Minimax + Local search -> color auto red
-        self.player2 = 0  #0 human, 1 AI-Minimax, 2 AI-Minimax + Local search -> color auto yellow
         self.color = 0 # 0 kosong, 1 merah, 2 kuning
+        self.mode = 0
         self.rad1hitbox = (490, 387, 65, 30)
         self.rad2hitbox = (590, 387, 75, 30)
         self.rad3hitbox = (700, 387, 75, 30)
         self.col1hitbox = (680, 500, 90, 24)
         self.col2hitbox = (475, 500, 145, 24)
+        self.mod1hitbox = (400, 585, 170, 30)
+        self.mod2hitbox = (580, 585, 170, 30)
+        self.mod3hitbox = (760, 585, 170, 30)
 
     def setrow(self,row):
         self.row = row
@@ -183,11 +212,8 @@ class startstate(object):
     def setcolor(self,col):
         self.color = col
 
-    def setplayer1(self,player1):
-        self.player1 = player1
-
-    def setplayer2(self,player2):
-        self.player2 = player2
+    def setmode(self,mode):
+        self.mode = mode
 
     def draw(self,win):
         rad1but = pygame.transform.scale(self.rad1but[((3-self.row) // 2) * self.row], (60, 24))
@@ -195,15 +221,24 @@ class startstate(object):
         rad3but = pygame.transform.scale(self.rad3but[self.row // 3], (60, 24))
         col2but = pygame.transform.scale(self.col2but[(1 - (self.color % 2)) * (self.color // 2)], (145, 24))
         col1but = pygame.transform.scale(self.col1but[((3-self.color) // 2) * self.color], (90, 24))
+        mod1but = pygame.transform.scale(self.mod1but[((3-self.mode) // 2) * self.mode], (170, 30))
+        mod2but = pygame.transform.scale(self.mod2but[ (1 - (self.mode % 2)) * (self.mode // 2)], (170, 30))
+        mod3but = pygame.transform.scale(self.mod3but[self.mode // 3], (170, 30))
         #print(self.row, ((3-self.row) // 2) * self.row, (1 - (self.row % 2)) * (self.row // 2), self.row // 3 )
-        win.blit(rad2but, (600, 390))
+        win.blit(mod2but, (580, 585))
         #pygame.draw.rect(win, (255,0,0), self.rad2hitbox,2)
-        win.blit(rad1but, (500, 390))
+        win.blit(mod1but, (400, 585))
         #pygame.draw.rect(win, (255,0,0), self.rad1hitbox,2)
+        win.blit(mod3but, (760, 585))
+        win.blit(rad2but, (600, 390))
+        pygame.draw.rect(win, (255,0,0), self.mod2hitbox,2)
+        win.blit(rad1but, (500, 390))
+        pygame.draw.rect(win, (255,0,0), self.mod1hitbox,2)
         win.blit(rad3but, (710, 390))
-        #pygame.draw.rect(win, (255,0,0), self.rad3hitbox,2)
+        pygame.draw.rect(win, (255,0,0), self.mod3hitbox,2)
         #pygame.draw.rect(win, (255,0,0), self.col1hitbox,2)
         #pygame.draw.rect(win, (255,0,0), self.col2hitbox,2)
+        
 
         #print(((3-self.row) // 2) * self.row, (1 - (self.row % 2)) * (self.row // 2), self.row // 3)
         win.blit(col1but, (680, 500))
