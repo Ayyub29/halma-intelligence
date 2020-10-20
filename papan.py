@@ -11,7 +11,7 @@ pygame.display.set_caption("Let's Play Halma!") # Judul gamenya
 
 class cellboard(object):
     # Kelas untuk si petak+bidaknya
-    bidak1 = [pygame.image.load('cellboard-kosong.png').convert(), pygame.image.load('cellboard-bidak1.png'), pygame.image.load('cellboard-bidak1-move.png'), pygame.image.load('cellboard-bidak2.png'), pygame.image.load('cellboard-bidak2-move.png')]
+    bidak1 = [pygame.image.load("design/cellboard.png").convert(), pygame.image.load("design/dark-piece-cellboard.png"), pygame.image.load("design/invalid-move-light.png"), pygame.image.load("design/dark-piece-cellboard-1.png"), pygame.image.load("invalid-move-light.png")]
     # bidak1 untuk meload gambar dari assets, outputnya array of image
     # 0 untuk petak kosong, 1 untuk petak+bidak merah, 2 untuk petak+bidak merah yang diklik, 3 untuk petak+bidak kuning, 4 untuk petak+bidak kuning yang diklik
 

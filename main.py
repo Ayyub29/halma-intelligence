@@ -33,7 +33,7 @@ start = True #dia lagi lagi di page mana? kalo true berarti di page awal, kalo f
 hasSetRow = False
 hasSetColor = False
 
-bg1 = [pygame.image.load('bgstart.png'), pygame.image.load('bggame.png')]
+bg1 = [pygame.image.load("design/Landing-page-bg.png"), pygame.image.load("design/Game-2.png")]
 bg = pygame.transform.scale(bg1[0], (1280, 720))
 win.blit(bg, (0,0))
 #buat ngeload background
