@@ -9,9 +9,10 @@ win = pygame.display.set_mode((1280,720)) # window dari pygamenya, ukurannya 128
 
 pygame.display.set_caption("Let's Play Halma!") # Judul gamenya
 
+
 class cellboard(object):
     # Kelas untuk si petak+bidaknya
-    bidak1 = [pygame.image.load("design/cellboard.png").convert(), pygame.image.load("design/dark-piece-cellboard.png"), pygame.image.load("design/invalid-move-light.png"), pygame.image.load("design/dark-piece-cellboard-1.png"), pygame.image.load("invalid-move-light.png")]
+    bidak1 = [pygame.image.load('cellboard-kosong.png').convert(), pygame.image.load('cellboard-bidak1.png'), pygame.image.load('cellboard-bidak1-move.png'), pygame.image.load('cellboard-bidak2.png'), pygame.image.load('cellboard-bidak2-move.png')]
     # bidak1 untuk meload gambar dari assets, outputnya array of image
     # 0 untuk petak kosong, 1 untuk petak+bidak merah, 2 untuk petak+bidak merah yang diklik, 3 untuk petak+bidak kuning, 4 untuk petak+bidak kuning yang diklik
 
@@ -152,29 +153,6 @@ class papan(object):
         #pygame.draw.rect(win, (255,0,0), self.quithitbox,2)
 
     #Objective Function
-    def objective(self, state):
-        n = self.x
-
-        mySum = 0
-        enemySum = 0
-        for i in range(n):
-            for j in range(n):
-
-                #cek pake status dari si cellboard (apakah dia ada bidak atau ga)
-                if self.isi[i][j].status == 1  or self.isi[i][j].status == 3:
-
-                    #ini rumusnya gara-gara ayyub ga konsisten hehe
-                    if (self.isi[i][j].status+1)/2  == state.color:
-
-                        #Jumlahin score player 1
-                        mySum = mySum + i + j
-                    else:
-
-                        #Jumlahin score player 2
-                        enemySum = enemySum + (n-i-1) + (n-j-1)
-
-        print(mySum, enemySum)
-        return mySum - enemySum
 
 class startstate(object):
     #setting permainan
@@ -230,20 +208,3 @@ class startstate(object):
         #print(((3-self.row) // 2) * self.row, (1 - (self.row % 2)) * (self.row // 2), self.row // 3)
         win.blit(col1but, (680, 500))
         win.blit(col2but, (475, 500))
-
-    def win(self, board):
-        n = board.x
-
-        first = 0
-        second = 0
-        for i in range(n):
-            for j in range(n):
-                if board.isi[i][j].status == 1 or board.isi[i][j].status == 3:
-                    if board.isi[i][j].status == self.color:
-                        if 3*n/2-1 <= board.isi[i][j].x + board.isi[i][j].y <= 2*(n-1):
-                             first += 1
-                    else:
-                        if board.isi[i][j].x + board.isi[i][j].y <= n/2-1:
-                            second += 1
-
-        return first, second
