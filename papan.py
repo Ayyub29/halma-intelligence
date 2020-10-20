@@ -164,7 +164,7 @@ class papan(object):
                 if self.isi[i][j].status == 1  or self.isi[i][j].status == 3:
 
                     #ini rumusnya gara-gara ayyub ga konsisten hehe
-                    if 2*self.isi[i][j].status - 1 == state.color:
+                    if (self.isi[i][j].status+1)/2  == state.color:
 
                         #Jumlahin score player 1
                         mySum = mySum + i + j
@@ -173,6 +173,7 @@ class papan(object):
                         #Jumlahin score player 2
                         enemySum = enemySum + (n-i-1) + (n-j-1)
 
+        print(mySum, enemySum)
         return mySum - enemySum
 
 class startstate(object):
@@ -229,3 +230,20 @@ class startstate(object):
         #print(((3-self.row) // 2) * self.row, (1 - (self.row % 2)) * (self.row // 2), self.row // 3)
         win.blit(col1but, (680, 500))
         win.blit(col2but, (475, 500))
+
+    def win(self, board):
+        n = board.x
+
+        first = 0
+        second = 0
+        for i in range(n):
+            for j in range(n):
+                if board.isi[i][j].status == 1 or board.isi[i][j].status == 3:
+                    if board.isi[i][j].status == self.color:
+                        if 3*n/2-1 <= board.isi[i][j].x + board.isi[i][j].y <= 2*(n-1):
+                             first += 1
+                    else:
+                        if board.isi[i][j].x + board.isi[i][j].y <= n/2-1:
+                            second += 1
+
+        return first, second
