@@ -128,10 +128,6 @@ while run:
                         countLoop = 1
                         sedangLoncat = False
                         print(board.objective(halma))
-                        print(halma.win(board))
-                    """
-                    else:
-                        board.changeturn()
                         for kotak in curPiece:
                             kotak.setStatus(kotak.status - 1)
                             kotak.clicked = 0
