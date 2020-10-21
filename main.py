@@ -260,7 +260,7 @@ while run:
                         # ngeserve background page selanjutnya
                         board = papan(ukuranPapan,ukuranPapan,halma.color,halma.mode)
     else:
-        if board.turn == 1 and (board.mode == 1 or board.mode == 2): #and (board.mode == 1 or board.mode == 2) and board.player1 == 1:
+        if board.turn == 1 and board.mode != 3: #and (board.mode == 1 or board.mode == 2) and board.player1 == 1:
             for event in pygame.event.get():
                 if board.time == 0:
                 #ngeback semua yang udah terjadi
@@ -316,9 +316,6 @@ while run:
                                         board.isi[i][j].setStatus(board.isi[i][j].status+1) #ngubah status dari bidak ada isi ke lagi diklik
                                         curPiece.append(board.isi[i][j]) #masukin si cellboardnya ke curpiece
                                         firstPiece = board.isi[i][j] #cellboard pertama yang lagi diklik
-                                        allmove = possibleMove(board,firstPiece)
-                                        for pion in allmove:
-                                            print(pion.x,pion.y)
                                 else: #kalo udah ada yang diklik
                                     
                                     if (firstPiece.owner == board.turn-1 and countLoop > 0 and board.isi[i][j].status == 0): #jika turnnya turn dia, countLoopnya masih ada dan yang diklik kosong
@@ -347,7 +344,7 @@ while run:
                                                 board.isi[i][j].clicked = 1
                                                 board.isi[i][j].owner = firstPiece.owner
                                                 lastPiece = board.isi[i][j]
-        if board.turn == 2:# and (board.mode == 3 or board.mode == 2): #and (board.mode == 3 or board.mode == 2) and board.player == 2:#(board.mode == 1 or board.mode == 3) and ((board.player1 == 2 and board.turn == 1) or (board.player2 == 2 and board.turn == 2)):
+        if board.turn == 2 or (board.turn == 1 and board.mode == 3): #and (board.mode == 3 or board.mode == 2) and board.player == 2:#(board.mode == 1 or board.mode == 3) and ((board.player1 == 2 and board.turn == 1) or (board.player2 == 2 and board.turn == 2)):
             board = minimax(board,board.turn,1)
             board.changeturn()
 
