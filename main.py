@@ -1,4 +1,5 @@
 import pygame
+import random
 import time
 import math
 from papan import cellboard, papan, startstate
@@ -39,7 +40,7 @@ def possibleMove(papan, pion):
                     b = pion.y - 2*j if (pion.y -2*j > 0) else 2*j- pion.y
                     c = math.floor((a + pion.x)/2)
                     d = math.floor((b + pion.y)/2)
-                    
+
                     if (a >= 0 and a < 8 and b >= 0 and b < 8) and (c == i and d == j):
                         if (papan.isi[a][b].status == 0):
                             #print(c,d,i,j)
@@ -59,7 +60,7 @@ def possibleMove(papan, pion):
                     b = piece.y - 2*l if (piece.y -2*l > 0) else 2*l- piece.y
                     c = math.floor((a + piece.x)/2)
                     d = math.floor((b + piece.y)/2)
-                    
+
                     if (a >= 0 and a < 8 and b >= 0 and b < 8) and (c == k and d == l):
                         if (papan.isi[a][b].status == 0 and not (piece.x == papan.isi[a][b].x and piece.y == papan.isi[a][b].y)):
                             #print(c,d,i,j)
@@ -69,7 +70,7 @@ def possibleMove(papan, pion):
                             adayangbisadiloncat = True
         if adayangbisadiloncat == False:
             sedangLoncat = False
-        
+
     return allmove
 
 def maxValue(board, player, depth, alpha, beta):
@@ -92,7 +93,7 @@ def maxValue(board, player, depth, alpha, beta):
             papanTemp.isi[bidak.x][bidak.y].owner = 2
             papanTemp.isi[move.x][move.y] = copy.deepcopy(move)
             allPapan.append(papanTemp)
-    
+
     bestValue = -(math.inf)
     # bestPapan = papan()
     for boards in allPapan:
@@ -108,8 +109,8 @@ def maxValue(board, player, depth, alpha, beta):
 
 def minValue(board, player, depth, alpha, beta):
     if (depth == 0):
-        return fungsiObjektif(board) 
-        
+        return fungsiObjektif(board)
+
     pion = []
     for i in range (len(board.isi)):
         for j in range (len(board.isi[i])):
@@ -135,8 +136,8 @@ def minValue(board, player, depth, alpha, beta):
             return worstValue
         alpha = max(alpha, val)
 
-    return worstValue    
-    
+    return worstValue
+
 
 def minimax(board, player, depth):
     # result = checkWinner()
@@ -176,6 +177,24 @@ def minimax(board, player, depth):
 
     return bestPapan
 
+objectiveValue8 = [[10,5,5,5,5,5,0,0], [10, 30, 30, 20, 20, 15, 10, 10], [10, 30, 35, 30, 25, 15, 20, 10], [10, 25, 45, 65, 65, 45, 25, 10], [10, 25, 65, 75, 75, 75, 75, 100], [10, 45, 55, 65, 75, 75, 105, 105], [10, 45, 55, 65, 75, 100, 105, 110], [10, 45, 55, 65, 105, 110, 115, 120]]
+objectiveValue10 = [[10,10,5,5,5,5,0,0,0,0], [10,30,30,25,25,15,15,10,10,0], [10,35,45,35,35,35,25,15,15,0], [10,35,55,55,65,75,65,55,35,15], [15,35,55,65,75,85,85,75,55,20], [15,40,45,55,65,70,70,70,70,105], [15,40,45,55,65,70,80,80,105,110], [20,40,45,55,65,70,80,105,110,115], [20,40,45,55,65,70,105,110,115,120], [25,40,45,55,65,105,110,115,120,125]]
+objectiveValue16 = [[15,15,10,10,10,10,5,5,5,5,5,5,0,0,0,0], [15,25,25,20,20,15,15,15,15,10,10,10,5,5,0], [5,15,30,27,25,25,25,22,20,20,15,15,15,10,10,10], [5,10,25,35,27,25,25,25,25,20,20,15,15,10,10,10], [10,10,15,15,20,30,35,30,25,25,20,20,15,15,15,15], [10,15,20,25,25,25,35,45,40,35,30,25,20,20,15,15], [10,15,20,20,25,30,35,35,45,35,30,25,25,20,20,15], [15,20,20,25,30,30,45,50,55,45,45,40,40,40,35,105], [15,20,20,25,25,25,35,35,35,55,45,45,45,40,105,110], [20,25,25,30,35,35,40,45,50,55,55,55,55,105,110,115], [20,25,25,30,35,35,45,50,55,60,65,65,65,105,110,115], [20,30,30,30,35,45,50,55,65,65,70,70,105,110,115,120], [20,35,35,40,45,50,50,55,65,65,70,105,110,115,120,125], [15,35,35,45,50,55,55,65,75,75,105,110,115,120,125,130], [20,30,40,50,60,65,75,75,105,110,115,120,125,130,135,135], [15,25,35,45,55,65,65,85,105,110,115,120,125,130,135,140]
+
+for i in range(8):
+    for j in range(8):
+        print(objectiveValue8[i][j],end="")
+    print()
+
+def cellObjektif(board,i,j):
+    if board.x == 8:
+        return objectiveValue8[i][j]
+    elif board.x == 10:
+        return objectiveValue10[i][j]
+    else:
+        return objectiveValue16[i][j]
+
+
 def fungsiObjektif(board):
     n = board.x
 
@@ -183,18 +202,53 @@ def fungsiObjektif(board):
     enemySum = 0
     for i in range(n):
         for j in range(n):
+
             #cek pake status dari si cellboard (apakah dia ada bidak atau ga)
             if board.isi[i][j].status == 1  or board.isi[i][j].status == 3:
                 #if 2*self.isi[i][j].status - 1 == state.color:
                 if board.isi[i][j].status == (board.turn+1)/2:
                     #Jumlahin score player 1
-                    mySum = mySum + i + j
+                    mySum = mySum + cellObjektif(board,i,j)
                 else:
+
                     #Jumlahin score player 2
-                    enemySum = enemySum + (n-i-1) + (n-j-1)
+                    enemySum = enemySum + cellObjektif(board, i, j)
 
     return mySum - enemySum
 
+def localMinimax(board, player, depth):
+    # result = checkWinner()
+    # if (result != null):
+    #     return result
+
+    pion = []
+    for i in range (len(board.isi)):
+        for j in range (len(board.isi[i])):
+            # Pion bot
+            if (board.isi[i][j].owner == player-1):
+                pion.append(board.isi[i][j])
+
+    allPapan = []
+    for bidak in pion:
+        for move in (possibleMove(board, bidak)):
+            print(move.x,move.y)
+            papanTemp = copy.deepcopy(board)
+            pionTemp = copy.deepcopy(move)
+            papanTemp.isi[pionTemp.x][pionTemp.y].status = bidak.status
+            papanTemp.isi[pionTemp.x][pionTemp.y].owner = bidak.owner
+            papanTemp.isi[bidak.x][bidak.y].status = 0
+            papanTemp.isi[bidak.x][bidak.y].owner = 2
+            allPapan.append(papanTemp)
+
+    successorBoard = board
+    loop = True
+    while loop:
+        neighbor = random.choice(allPapan)
+        if fungsiObjektif(successorBoard) > fungsiObjektif(neighbor):
+            loop = False
+            return successorBoard
+
+            successorBoard = neighbor
 # MAIN
 
 halma = startstate() # memulai permainan
@@ -290,7 +344,7 @@ while run:
                         lastX, lastY = -1, -1
                         countLoop = 1
                         sedangLoncat = False
-                        
+
                     if pygame.Rect(board.okayhitbox).collidepoint(event.pos):
                         if (len(curPiece) > 1): #intinya minimal ada 2 cellboard yang lagi diklik
                             #dia ngubah turn dia mengubah lastclicked jadi bidak yang ada isinya, sisanya jadi bidak kosong, terus ngereset curPiece, lastX,lastY, dan sedang loncat
@@ -320,7 +374,7 @@ while run:
                                         for pion in allmove:
                                             print(pion.x,pion.y)
                                 else: #kalo udah ada yang diklik
-                                    
+
                                     if (firstPiece.owner == board.turn-1 and countLoop > 0 and board.isi[i][j].status == 0): #jika turnnya turn dia, countLoopnya masih ada dan yang diklik kosong
                                         a = math.floor((i + lastX)/2) #bidak musuh
                                         b = math.floor((j + lastY)/2)
